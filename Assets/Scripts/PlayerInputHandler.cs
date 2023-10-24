@@ -15,22 +15,25 @@ public class PlayerInputHandler : MonoBehaviour
     }
     public void OnLeftFire(InputAction.CallbackContext context)
     {
-        if (context.action.WasPressedThisFrame())
+     
+        if (context.started)
         {
             leftFire = true;
+            print("teste1");
+        }else if (context.performed)
+        {
+            print("teste2");
+            leftFire = false;
         }
     }
     public void OnRightFire(InputAction.CallbackContext context)
     {
-        if(context.action.WasPressedThisFrame())
+        if(context.started)
         {
             rightFire = true;
+        }else if (context.performed)
+        {
+            rightFire = false;
         }
-    }
-
-    private void Update()
-    {
-        Debug.Log(leftFire);
-        Debug.Log(rightFire);
     }
 }
