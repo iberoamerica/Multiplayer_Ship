@@ -1,18 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public Vector2 movementInput;
+    public bool leftFire;
+    public bool rightFire;
+    public void OnMoveInput(InputAction.CallbackContext context)
     {
-        
+        movementInput = context.ReadValue<Vector2>();
+    }
+    public void OnLeftFire(InputAction.CallbackContext context)
+    {
+        if (context.action.WasPressedThisFrame())
+        {
+            leftFire = true;
+        }
+    }
+    public void OnRightFire(InputAction.CallbackContext context)
+    {
+        if(context.action.WasPressedThisFrame())
+        {
+            rightFire = true;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        Debug.Log(leftFire);
+        Debug.Log(rightFire);
     }
 }
