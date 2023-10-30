@@ -21,14 +21,29 @@ public class PlayerController : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _rb = GetComponent<Rigidbody2D>();
+
         if (IsLocalPlayer)
         {
             _playerInputHandler = GetComponent<PlayerInputHandler>();
         }
+
     }
 
     // Update is called once per frame
     void Update()
+    {
+        Shoot();
+        Input();
+    }
+    private void FixedUpdate()
+    {
+        if (IsServer)
+        {
+            _rb.velocity = new Vector2(_moveDirection.x * _speed, _rb.velocity.y);
+        }
+    }
+    private void Shoot()
     {
         if (IsClient)
         {
@@ -38,11 +53,32 @@ public class PlayerController : NetworkBehaviour
                 print("Atirou");
                 _playerInputHandler.leftFire = false;
                 //Disparar para esquerda
-            }else if (_playerInputHandler.rightFire)
+            }
+            else if (_playerInputHandler.rightFire)
             {
                 _playerInputHandler.rightFire = false;
                 //Disparar para direita
             }
         }
+
+    }
+    private void Input()
+    {
+        if (!IsLocalPlayer) return;
+        if (_playerInputHandler.movementInput.x != _moveDirection.x)
+        {
+            _moveDirection = _playerInputHandler.movementInput;
+            MoveServerRpc(_moveDirection);
+        }
+        if (_playerInputHandler.movementInput.y != _angleDirection.y)
+        {
+            _angleDirection = _playerInputHandler.movementInput;
+            MoveServerRpc(_moveDirection);
+        }
+    }
+    [ServerRpc]
+    public void MoveServerRpc(Vector2 move)
+    {
+        _moveDirection = move.normalized;
     }
 }
