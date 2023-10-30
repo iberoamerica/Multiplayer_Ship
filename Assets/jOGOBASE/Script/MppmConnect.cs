@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using Unity.Multiplayer.Playmode;
-using Unity.Netcode;
-public class MPPM : MonoBehaviour
+
+/// A MonoBehaviour to automatically start Netcode for GameObjects
+/// clients, hosts, and servers
+public class MppmConnect : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         var mppmTag = CurrentPlayer.Tag;
@@ -13,10 +13,12 @@ public class MPPM : MonoBehaviour
         if (mppmTag.Contains("Server"))
         {
             networkManager.StartServer();
-        }else if (mppmTag.Contains("Host"))
+        }
+        else if (mppmTag.Contains("Host"))
         {
             networkManager.StartHost();
-        }else if (mppmTag.Contains("Client"))
+        }
+        else if (mppmTag.Contains("Client"))
         {
             networkManager.StartClient();
         }
