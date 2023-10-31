@@ -4,7 +4,6 @@ using UnityEngine;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 
 public class PlayerController : NetworkBehaviour
@@ -13,18 +12,21 @@ public class PlayerController : NetworkBehaviour
     private PlayerInputHandler _playerInputHandler;
     private Vector2 _moveDirection;
     private Vector2 _angleDirection;
+    private bool _isMoving;
     [SerializeField] private float _speed = 3f;
     [SerializeField] private float _maxDistance = 10f;
+    [SerializeField] private Vector3[] _spawnPositions;
 
 
 
     // Start is called before the first frame update
     void Start()
     {
+        _moveDirection = Vector3.zero;  
         _rb = GetComponent<Rigidbody2D>();
-
         if (IsLocalPlayer)
         {
+            GetComponent<PlayerInput>().enabled = true;
             _playerInputHandler = GetComponent<PlayerInputHandler>();
         }
 
@@ -36,12 +38,17 @@ public class PlayerController : NetworkBehaviour
         Shoot();
         Input();
     }
-    private void FixedUpdate()
+    public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            _rb.velocity = new Vector2(_moveDirection.x * _speed, _rb.velocity.y);
+            int index = (int)OwnerClientId;
+            transform.position = _spawnPositions[index];
         }
+    }
+    private void FixedUpdate()
+    {
+       Move();
     }
     private void Shoot()
     {
@@ -68,17 +75,25 @@ public class PlayerController : NetworkBehaviour
         if (_playerInputHandler.movementInput.x != _moveDirection.x)
         {
             _moveDirection = _playerInputHandler.movementInput;
-            MoveServerRpc(_moveDirection);
+            MoveNormalizedServerRpc(_moveDirection);
         }
         if (_playerInputHandler.movementInput.y != _angleDirection.y)
         {
             _angleDirection = _playerInputHandler.movementInput;
-            MoveServerRpc(_moveDirection);
+            MoveNormalizedServerRpc(_moveDirection);
         }
     }
     [ServerRpc]
-    public void MoveServerRpc(Vector2 move)
+    public void MoveNormalizedServerRpc(Vector2 move)
     {
         _moveDirection = move.normalized;
+    }
+    public void Move()
+    {
+        if (IsServer)
+        {
+            _rb.velocity = new Vector2(_moveDirection.x * _speed, _rb.velocity.y);
+            
+        }
     }
 }
