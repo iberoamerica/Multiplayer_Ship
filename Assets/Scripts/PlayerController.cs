@@ -103,6 +103,10 @@ public class PlayerController : NetworkBehaviour
                 float rotation = rotateInput * rotationSpeed * Time.fixedDeltaTime;
                 transform.Rotate(0, 0, -rotation);
             }
+            else
+            {
+                rb.angularVelocity = 0f;
+            }
 
             // Mover o barco para frente ou para trás
             Vector2 movement = transform.up * moveInput * moveSpeed * Time.fixedDeltaTime;
