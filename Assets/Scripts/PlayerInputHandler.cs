@@ -5,35 +5,36 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-
     public Vector2 movementInput;
-    public bool leftFire;
-    public bool rightFire;
+    public bool LeftFired;
+    public bool RightFired;
+
     public void OnMoveInput(InputAction.CallbackContext context)
     {
         movementInput = context.ReadValue<Vector2>();
     }
-    public void OnLeftFire(InputAction.CallbackContext context)
+
+    public void OnLeftFireInput(InputAction.CallbackContext context)
     {
-     
         if (context.started)
         {
-            leftFire = false;
-            print("teste1");
-        }else if (context.performed)
+            LeftFired = true;
+        }
+        else if (context.canceled)
         {
-            print("teste2");
-            leftFire = true;
+            LeftFired = false;
         }
     }
-    public void OnRightFire(InputAction.CallbackContext context)
+
+    public void OnRightFireInput(InputAction.CallbackContext context)
     {
-        if(context.started)
+        if (context.started)
         {
-            rightFire = false;
-        }else if (context.performed)
+            RightFired = true;
+        }
+        else if (context.canceled)
         {
-            rightFire = true;
+            RightFired = false;
         }
     }
 }
