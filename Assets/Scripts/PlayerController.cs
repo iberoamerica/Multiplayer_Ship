@@ -21,12 +21,14 @@ public class PlayerController : NetworkBehaviour
     private float nextLeftFireTime = 0f; // Momento do próximo disparo para o lado esquerdo
     private float nextRightFireTime = 0f; // Momento do próximo disparo para o lado direito
 
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         _moveDirection = Vector2.zero;
         if (IsLocalPlayer)
         {
+            Camera.main.GetComponent<CameraFollow>().setTarget(gameObject.transform);
             GetComponent<PlayerInput>().enabled = true;
             _inputHandler = GetComponent<PlayerInputHandler>();
         }

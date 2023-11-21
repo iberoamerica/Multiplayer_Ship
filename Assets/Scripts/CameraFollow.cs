@@ -2,41 +2,20 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public string targetTag = "Player"; // Tag do jogador
-    public float smoothSpeed = 0.125f; // Velocidade de suavização
+    public Transform playerTransform;
+    public int depth = -20;
 
-    private Transform target; // Referência dinâmica para o transform do jogador
-    private Vector3 offset; // Distância inicial entre a câmera e o jogador
-
-    private void Start()
+    // Update is called once per frame
+    void Update()
     {
-        FindPlayer(); // Encontra o jogador no início
-    }
-
-    private void FindPlayer()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag(targetTag); // Encontra o GameObject do jogador pela tag
-        if (player != null)
+        if (playerTransform != null)
         {
-            target = player.transform; // Define o jogador como alvo
-            offset = transform.position - target.position; // Calcula a distância inicial entre a câmera e o jogador
-        }
-        else
-        {
-            Debug.LogWarning("Player not found with tag " + targetTag); // Avisa se o jogador não for encontrado
+            transform.position = playerTransform.position + new Vector3(0, 0, depth);
         }
     }
 
-    private void FixedUpdate()
+    public void setTarget(Transform target)
     {
-        if (target == null)
-        {
-            FindPlayer(); // Encontra o jogador se ele não existir ainda
-            return;
-        }
-
-        Vector3 desiredPosition = target.position + offset; // Calcula a posição desejada da câmera
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed); // Suaviza o movimento
-        transform.position = smoothedPosition; // Atualiza a posição da câmera
+        playerTransform = target;
     }
 }
