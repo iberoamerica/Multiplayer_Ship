@@ -1,10 +1,12 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 public class PlayerController : NetworkBehaviour
 {
     //Atributos
     public NetworkVariable<float> health = new NetworkVariable<float>(30f);
+    [SerializeField] private Slider _healthSlider;
     //Movement
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
@@ -26,8 +28,14 @@ public class PlayerController : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         _moveDirection = Vector2.zero;
+        _healthSlider.maxValue = health.Value;
+        health.OnValueChanged += (float old, float newVal) =>
+        {
+            _healthSlider.value = (float)newVal;
+        };
         if (IsLocalPlayer)
         {
+            
             Camera.main.GetComponent<CameraFollow>().setTarget(gameObject.transform);
             GetComponent<PlayerInput>().enabled = true;
             _inputHandler = GetComponent<PlayerInputHandler>();
@@ -68,6 +76,7 @@ public class PlayerController : NetworkBehaviour
 
        
     }
+    
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -80,16 +89,21 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsServer)
         {
-            if(health.Value <= 0)
+            float novaSaude = health.Value - damage;
+            if (novaSaude <= 0)
             {
                 Debug.Log("Morreu");
                 Destroy(gameObject);
             }
             else{
-                health.Value -= damage;
+                health.Value = novaSaude;
+                // _healthSlider.value = novaSaude;  // Atualiza o valor do slider
+                
+
             }
             
         }
+        
     }
     private void FixedUpdate()
     {
